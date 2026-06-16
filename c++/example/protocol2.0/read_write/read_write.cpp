@@ -22,19 +22,14 @@
 * How to use the example :
 *   - Use proper DYNAMIXEL Model definition from line #44
 *   - Build and Run from proper architecture subdirectory.
-*   - For ARM based SBCs such as Raspberry Pi, use linux_sbc subdirectory to build and run.
 *   - https://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_sdk/overview/
 * Author: Ryu Woon Jung (Leon)
 * Maintainer : Zerom, Will Son
 *******************************************************************************/
 
-#if defined(__linux__) || defined(__APPLE__)
 #include <fcntl.h>
 #include <termios.h>
 #define STDIN_FILENO 0
-#elif defined(_WIN32) || defined(_WIN64)
-#include <conio.h>
-#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -89,7 +84,7 @@
   #define BAUDRATE                    57600  
 #endif
 
-// DYNAMIXEL Protocol Version (1.0 / 2.0)
+// DYNAMIXEL Protocol Version (2.0)
 // https://emanual.robotis.com/docs/en/dxl/protocol2/
 #define PROTOCOL_VERSION  2.0
 
@@ -97,7 +92,7 @@
 #define DXL_ID  1
 
 // Use the actual port assigned to the U2D2.
-// ex) Windows: "COM*", Linux: "/dev/ttyUSB*", Mac: "/dev/tty.usbserial-*"
+// ex) Linux: "/dev/ttyUSB*"
 #define DEVICENAME  "/dev/ttyUSB0"
 
 #define TORQUE_ENABLE                   1
@@ -106,7 +101,6 @@
 #define ESC_ASCII_VALUE                 0x1b
 
 int getch() {
-#if defined(__linux__) || defined(__APPLE__)
   struct termios oldt, newt;
   int ch;
   tcgetattr(STDIN_FILENO, &oldt);
@@ -116,13 +110,9 @@ int getch() {
   ch = getchar();
   tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
   return ch;
-#elif defined(_WIN32) || defined(_WIN64)
-  return _getch();
-#endif
 }
 
 int kbhit(void) {
-#if defined(__linux__) || defined(__APPLE__)
   struct termios oldt, newt;
   int ch;
   int oldf;
@@ -145,20 +135,17 @@ int kbhit(void) {
   }
 
   return 0;
-#elif defined(_WIN32) || defined(_WIN64)
-  return _kbhit();
-#endif
 }
 
 int main() {
   // Initialize PortHandler instance
   // Set the port path
-  // Get methods and members of PortHandlerLinux or PortHandlerWindows
+  // Get methods and members of PortHandlerLinux
   dynamixel::PortHandler *portHandler = dynamixel::PortHandler::getPortHandler(DEVICENAME);
 
   // Initialize PacketHandler instance
   // Set the protocol version
-  // Get methods and members of Protocol1PacketHandler or Protocol2PacketHandler
+  // Get methods and members of Protocol2PacketHandler
   dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 
   int index = 0;

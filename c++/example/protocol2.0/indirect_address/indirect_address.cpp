@@ -25,13 +25,9 @@
 // Be sure that Dynamixel PRO properties are already set as %% ID : 1 / Baudnum : 1 (Baudrate : 57600)
 //
 
-#if defined(__linux__) || defined(__APPLE__)
 #include <fcntl.h>
 #include <termios.h>
 #define STDIN_FILENO 0
-#elif defined(_WIN32) || defined(_WIN64)
-#include <conio.h>
-#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -65,7 +61,7 @@
 #define DXL_ID                                  1                   // Dynamixel ID: 1
 #define BAUDRATE                                57600
 #define DEVICENAME                              "/dev/ttyUSB0"      // Check which port is being used on your controller
-                                                                    // ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
+                                                                    // ex) Linux: "/dev/ttyUSB0"
 
 #define TORQUE_ENABLE                           1                   // Value for enabling the torque
 #define TORQUE_DISABLE                          0                   // Value for disabling the torque
@@ -79,7 +75,6 @@
 
 int getch()
 {
-#if defined(__linux__) || defined(__APPLE__)
   struct termios oldt, newt;
   int ch;
   tcgetattr(STDIN_FILENO, &oldt);
@@ -89,14 +84,10 @@ int getch()
   ch = getchar();
   tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
   return ch;
-#elif defined(_WIN32) || defined(_WIN64)
-  return _getch();
-#endif
 }
 
 int kbhit(void)
 {
-#if defined(__linux__) || defined(__APPLE__)
   struct termios oldt, newt;
   int ch;
   int oldf;
@@ -120,21 +111,18 @@ int kbhit(void)
   }
 
   return 0;
-#elif defined(_WIN32) || defined(_WIN64)
-  return _kbhit();
-#endif
 }
 
 int main()
 {
   // Initialize PortHandler instance
   // Set the port path
-  // Get methods and members of PortHandlerLinux or PortHandlerWindows
+  // Get methods and members of PortHandlerLinux
   dynamixel::PortHandler *portHandler = dynamixel::PortHandler::getPortHandler(DEVICENAME);
 
   // Initialize PacketHandler instance
   // Set the protocol version
-  // Get methods and members of Protocol1PacketHandler or Protocol2PacketHandler
+  // Get methods and members of Protocol2PacketHandler
   dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 
   // Initialize GroupSyncWrite instance

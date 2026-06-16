@@ -41,13 +41,5 @@ endforeach()
 
 if(NOT _dxl_prefix STREQUAL "")
   file(REMOVE_RECURSE "${_dxl_prefix}/@CMAKE_INSTALL_INCLUDEDIR@/dynamixel_sdk")
-  if(NOT APPLE)
-    file(REMOVE_RECURSE "${_dxl_prefix}/@CMAKE_INSTALL_INCLUDEDIR@/dynamixel_easy_sdk")
-  endif()
-
-  if(NOT APPLE)
-    file(REMOVE_RECURSE "${_dxl_prefix}/@CMAKE_INSTALL_DATAROOTDIR@/dynamixel_sdk/control_table")
-  endif()
-
   file(REMOVE_RECURSE "${_dxl_prefix}/@CMAKE_INSTALL_LIBDIR@/cmake/dynamixel_sdk")
 endif()

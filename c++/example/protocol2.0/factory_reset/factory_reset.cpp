@@ -29,14 +29,10 @@
 // This example resets all properties of Dynamixel to default values, such as %% ID : 1 / Baudnum : 1 (Baudrate : 57600)
 //
 
-#if defined(__linux__) || defined(__APPLE__)
 #include <fcntl.h>
 #include <termios.h>
 #include <unistd.h>
 #define STDIN_FILENO 0
-#elif defined(_WIN32) || defined(_WIN64)
-#include <conio.h>
-#endif
 #include <stdio.h>
 
 #include "dynamixel_sdk.h"                                  // Uses Dynamixel SDK library
@@ -51,7 +47,7 @@
 #define DXL_ID                          1                   // Dynamixel ID: 1
 #define BAUDRATE                        57600
 #define DEVICENAME                      "/dev/ttyUSB0"      // Check which port is being used on your controller
-                                                            // ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
+                                                            // ex) Linux: "/dev/ttyUSB0"
 
 #define FACTORYRST_DEFAULTBAUDRATE      57600               // Dynamixel baudrate set by factoryreset
 #define NEW_BAUDNUM                     3                   // New baudnum to recover Dynamixel baudrate as it was
@@ -61,7 +57,6 @@
 
 int getch()
 {
-#if defined(__linux__) || defined(__APPLE__)
   struct termios oldt, newt;
   int ch;
   tcgetattr(STDIN_FILENO, &oldt);
@@ -71,14 +66,10 @@ int getch()
   ch = getchar();
   tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
   return ch;
-#elif defined(_WIN32) || defined(_WIN64)
-  return _getch();
-#endif
 }
 
 int kbhit(void)
 {
-#if defined(__linux__) || defined(__APPLE__)
   struct termios oldt, newt;
   int ch;
   int oldf;
@@ -102,30 +93,23 @@ int kbhit(void)
   }
 
   return 0;
-#elif defined(_WIN32) || defined(_WIN64)
-  return _kbhit();
-#endif
 }
 
 void msecSleep(int waitTime)
 {
-#if defined(__linux__) || defined(__APPLE__)
   usleep(waitTime * 1000);
-#elif defined(_WIN32) || defined(_WIN64)
-  _sleep(waitTime);
-#endif
 }
 
 int main()
 {
   // Initialize PortHandler instance
   // Set the port path
-  // Get methods and members of PortHandlerLinux or PortHandlerWindows
+  // Get methods and members of PortHandlerLinux
   dynamixel::PortHandler *portHandler = dynamixel::PortHandler::getPortHandler(DEVICENAME);
 
   // Initialize PacketHandler instance
   // Set the protocol version
-  // Get methods and members of Protocol1PacketHandler or Protocol2PacketHandler
+  // Get methods and members of Protocol2PacketHandler
   dynamixel::PacketHandler *packetHandler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 
   int dxl_comm_result = COMM_TX_FAIL;             // Communication result

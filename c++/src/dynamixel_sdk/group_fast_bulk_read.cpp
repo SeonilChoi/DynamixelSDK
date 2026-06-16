@@ -18,16 +18,7 @@
 
 #include <algorithm>
 
-#if defined(__linux__)
 #include "group_fast_bulk_read.h"
-#elif defined(__APPLE__)
-#include "group_fast_bulk_read.h"
-#elif defined(_WIN32) || defined(_WIN64)
-#define WINDLLEXPORT
-#include "group_fast_bulk_read.h"
-#elif defined(ARDUINO) || defined(__OPENCR__) || defined(__OPENCM904__)
-#include "../../include/dynamixel_sdk/group_fast_bulk_read.h"
-#endif
 
 const int RXPACKET_MAX_LEN = 1024;
 const int PKT_ID = 4;
@@ -43,7 +34,7 @@ GroupFastBulkRead::GroupFastBulkRead(PortHandler *port, PacketHandler *ph)
 
 void GroupFastBulkRead::makeParam()
 {
-    if ((1.0 == ph_->getProtocolVersion()) || (id_list_.empty()))
+    if (id_list_.empty())
         return;
 
     if (0 != param_)
@@ -65,7 +56,7 @@ void GroupFastBulkRead::makeParam()
 
 int GroupFastBulkRead::txPacket()
 {
-    if ((1.0 == ph_->getProtocolVersion()) || (id_list_.empty()))
+    if (id_list_.empty())
         return COMM_NOT_AVAILABLE;
 
     if ((true == is_param_changed_) || (0 == param_))
@@ -78,7 +69,7 @@ int GroupFastBulkRead::rxPacket()
 {
     last_result_ = false;
 
-    if ((1.0 == ph_->getProtocolVersion()) || (id_list_.empty()))
+    if (id_list_.empty())
         return COMM_NOT_AVAILABLE;
 
     int count = id_list_.size();
@@ -111,9 +102,6 @@ int GroupFastBulkRead::rxPacket()
 
 int GroupFastBulkRead::txRxPacket()
 {
-    if (1.0 == ph_->getProtocolVersion())
-        return COMM_NOT_AVAILABLE;
-
     int result = txPacket();
     if (COMM_SUCCESS != result)
         return result;

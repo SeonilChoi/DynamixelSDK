@@ -5,6 +5,14 @@ project(dynamixel_sdk VERSION 4.0.5 LANGUAGES CXX)
 
 set(_dxl_pkg "dynamixel_sdk")
 
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  message(FATAL_ERROR "This trimmed SDK tree only supports Linux.")
+endif()
+
+if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+  message(FATAL_ERROR "This trimmed SDK tree only supports 64-bit Linux.")
+endif()
+
 # --------------------------------------------------------
 # 1. Build Environment Configuration
 # --------------------------------------------------------
@@ -19,9 +27,9 @@ option(DYNAMIXEL_SDK_RUN_LDCONFIG
 )
 
 # --------------------------------------------------------
-# 2. Build C++ Library (common sources + platform-specific, like c/CMakeLists.txt)
+# 2. Build C++ Library
 # --------------------------------------------------------
-set(_dxl_common_sources
+set(_dxl_sources
   src/dynamixel_sdk/group_bulk_read.cpp
   src/dynamixel_sdk/group_bulk_write.cpp
   src/dynamixel_sdk/group_sync_read.cpp
@@ -31,32 +39,8 @@ set(_dxl_common_sources
   src/dynamixel_sdk/group_handler.cpp
   src/dynamixel_sdk/packet_handler.cpp
   src/dynamixel_sdk/port_handler.cpp
-  src/dynamixel_sdk/protocol1_packet_handler.cpp
+  src/dynamixel_sdk/port_handler_linux.cpp
   src/dynamixel_sdk/protocol2_packet_handler.cpp
-)
-
-if(APPLE)
-  set(_dxl_platform_sources
-    src/dynamixel_sdk/port_handler_mac.cpp
-  )
-elseif(WIN32)
-  set(_dxl_platform_sources
-    src/dynamixel_sdk/port_handler_windows.cpp
-  )
-else()
-  set(_dxl_platform_sources
-    src/dynamixel_sdk/port_handler_linux.cpp
-    src/dynamixel_easy_sdk/connector.cpp
-    src/dynamixel_easy_sdk/control_table.cpp
-    src/dynamixel_easy_sdk/motor.cpp
-    src/dynamixel_easy_sdk/dynamixel_error.cpp
-    src/dynamixel_easy_sdk/group_executor.cpp
-  )
-endif()
-
-set(_dxl_sources
-  ${_dxl_common_sources}
-  ${_dxl_platform_sources}
 )
 
 add_library(dynamixel_sdk SHARED ${_dxl_sources})
@@ -68,7 +52,6 @@ target_include_directories(dynamixel_sdk PUBLIC
 )
 target_include_directories(dynamixel_sdk PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/include/dynamixel_sdk
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/dynamixel_easy_sdk
 )
 
 set_target_properties(dynamixel_sdk PROPERTIES
@@ -79,17 +62,7 @@ set_target_properties(dynamixel_sdk PROPERTIES
   OUTPUT_NAME "dxl_cpp"
 )
 
-if(UNIX AND NOT APPLE)
-  target_link_libraries(dynamixel_sdk PRIVATE rt)
-endif()
-
-if(NOT APPLE)
-  set(_control_table_path "${CMAKE_INSTALL_PREFIX}/share/${_dxl_pkg}/control_table")
-  target_compile_definitions(dynamixel_sdk
-    PUBLIC
-      CONTROL_TABLE_PATH="${_control_table_path}"
-  )
-endif()
+target_link_libraries(dynamixel_sdk PRIVATE rt)
 
 # --------------------------------------------------------
 # 3. Installation
@@ -100,20 +73,6 @@ install(
   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/dynamixel_sdk/
   DESTINATION include/${_dxl_pkg}
 )
-
-if(UNIX AND NOT APPLE)
-  install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/dynamixel_easy_sdk/
-    DESTINATION include/dynamixel_easy_sdk
-  )
-endif()
-
-if(NOT APPLE)
-  install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../control_table/
-    DESTINATION share/${_dxl_pkg}/control_table
-  )
-endif()
 
 set(_dxl_cmake_package_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${_dxl_pkg}")
 
@@ -154,7 +113,7 @@ install(
   DESTINATION ${_dxl_cmake_package_dir}
 )
 
-if(DYNAMIXEL_SDK_RUN_LDCONFIG AND UNIX AND NOT APPLE)
+if(DYNAMIXEL_SDK_RUN_LDCONFIG)
   install(CODE "execute_process(COMMAND ldconfig)")
 endif()
 

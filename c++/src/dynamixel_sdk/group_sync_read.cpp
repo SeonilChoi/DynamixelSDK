@@ -18,16 +18,7 @@
 
 #include <algorithm>
 
-#if defined(__linux__)
 #include "group_sync_read.h"
-#elif defined(__APPLE__)
-#include "group_sync_read.h"
-#elif defined(_WIN32) || defined(_WIN64)
-#define WINDLLEXPORT
-#include "group_sync_read.h"
-#elif defined(ARDUINO) || defined(__OPENCR__) || defined(__OPENCM904__) || defined(ARDUINO_OpenRB)
-#include "../../include/dynamixel_sdk/group_sync_read.h"
-#endif
 
 using namespace dynamixel;
 
@@ -42,7 +33,7 @@ GroupSyncRead::GroupSyncRead(PortHandler *port, PacketHandler *ph, uint16_t star
 
 void GroupSyncRead::makeParam()
 {
-  if (ph_->getProtocolVersion() == 1.0 || id_list_.size() == 0)
+  if (id_list_.size() == 0)
     return;
 
   if (param_ != 0)
@@ -58,9 +49,6 @@ void GroupSyncRead::makeParam()
 
 bool GroupSyncRead::addParam(uint8_t id)
 {
-  if (ph_->getProtocolVersion() == 1.0)
-    return false;
-
   if (std::find(id_list_.begin(), id_list_.end(), id) != id_list_.end())   // id already exist
     return false;
 
@@ -73,9 +61,6 @@ bool GroupSyncRead::addParam(uint8_t id)
 }
 void GroupSyncRead::removeParam(uint8_t id)
 {
-  if (ph_->getProtocolVersion() == 1.0)
-    return;
-
   std::vector<uint8_t>::iterator it = std::find(id_list_.begin(), id_list_.end(), id);
   if (it == id_list_.end())    // NOT exist
     return;
@@ -90,7 +75,7 @@ void GroupSyncRead::removeParam(uint8_t id)
 }
 void GroupSyncRead::clearParam()
 {
-  if (ph_->getProtocolVersion() == 1.0 || id_list_.size() == 0)
+  if (id_list_.size() == 0)
     return;
 
   for (unsigned int i = 0; i < id_list_.size(); i++)
@@ -109,7 +94,7 @@ void GroupSyncRead::clearParam()
 
 int GroupSyncRead::txPacket()
 {
-  if (ph_->getProtocolVersion() == 1.0 || id_list_.size() == 0)
+  if (id_list_.size() == 0)
     return COMM_NOT_AVAILABLE;
 
   if (is_param_changed_ == true || param_ == 0)
@@ -121,9 +106,6 @@ int GroupSyncRead::txPacket()
 int GroupSyncRead::rxPacket()
 {
   last_result_ = false;
-
-  if (ph_->getProtocolVersion() == 1.0)
-    return COMM_NOT_AVAILABLE;
 
   int cnt            = id_list_.size();
   int result         = COMM_RX_FAIL;
@@ -148,9 +130,6 @@ int GroupSyncRead::rxPacket()
 
 int GroupSyncRead::txRxPacket()
 {
-  if (ph_->getProtocolVersion() == 1.0)
-    return COMM_NOT_AVAILABLE;
-
   int result         = COMM_TX_FAIL;
 
   result = txPacket();
@@ -162,7 +141,7 @@ int GroupSyncRead::txRxPacket()
 
 bool GroupSyncRead::isAvailable(uint8_t id, uint16_t address, uint16_t data_length)
 {
-  if (ph_->getProtocolVersion() == 1.0 || last_result_ == false || data_list_.find(id) == data_list_.end())
+  if (last_result_ == false || data_list_.find(id) == data_list_.end())
     return false;
 
   if (address < start_address_ || start_address_ + data_length_ - data_length < address)
@@ -195,7 +174,7 @@ uint32_t GroupSyncRead::getData(uint8_t id, uint16_t address, uint16_t data_leng
 
 bool GroupSyncRead::getError(uint8_t id, uint8_t* error)
 {
-  if (ph_->getProtocolVersion() == 1.0 || !last_result_ || error_list_.find(id) == error_list_.end())
+  if (!last_result_ || error_list_.find(id) == error_list_.end())
     return false;
 
   error[0] = error_list_[id][0];

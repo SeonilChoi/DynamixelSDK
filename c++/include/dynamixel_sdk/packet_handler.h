@@ -22,14 +22,7 @@
 #ifndef DYNAMIXEL_SDK_INCLUDE_DYNAMIXEL_SDK_PACKETHANDLER_H_
 #define DYNAMIXEL_SDK_INCLUDE_DYNAMIXEL_SDK_PACKETHANDLER_H_
 
-#if defined(ARDUINO) || defined(__OPENCR__) || defined(__OPENCM904__) || defined(ARDUINO_OpenRB)
-#include <Arduino.h>
-
-#define ERROR_PRINT  SerialBT2.print
-#else
 #define ERROR_PRINT  printf
-
-#endif
 
 #include <stdio.h>
 #include <vector>
@@ -80,7 +73,7 @@ namespace dynamixel
 {
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @brief The class that inherits Protocol1PacketHandler class or Protocol2PacketHandler class
+/// @brief The class that provides the Protocol2PacketHandler interface
 ////////////////////////////////////////////////////////////////////////////////
 class WINDECLSPEC PacketHandler
 {
@@ -89,8 +82,8 @@ class WINDECLSPEC PacketHandler
 
  public:
   ////////////////////////////////////////////////////////////////////////////////
-  /// @brief The function that returns PacketHandler instance
-  /// @return PacketHandler instance
+  /// @brief The function that returns the Protocol 2.0 PacketHandler instance
+  /// @return Protocol 2.0 PacketHandler instance
   ////////////////////////////////////////////////////////////////////////////////
   static PacketHandler *getPacketHandler(float protocol_version = 2.0);
 

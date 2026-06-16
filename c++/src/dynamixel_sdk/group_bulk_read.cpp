@@ -19,16 +19,7 @@
 #include <stdio.h>
 #include <algorithm>
 
-#if defined(__linux__)
 #include "group_bulk_read.h"
-#elif defined(__APPLE__)
-#include "group_bulk_read.h"
-#elif defined(_WIN32) || defined(_WIN64)
-#define WINDLLEXPORT
-#include "group_bulk_read.h"
-#elif defined(ARDUINO) || defined(__OPENCR__) || defined(__OPENCM904__) || defined(ARDUINO_OpenRB)
-#include "../../include/dynamixel_sdk/group_bulk_read.h"
-#endif
 
 using namespace dynamixel;
 
@@ -48,33 +39,17 @@ void GroupBulkRead::makeParam()
     delete[] param_;
   param_ = 0;
 
-  if (ph_->getProtocolVersion() == 1.0)
-  {
-    param_ = new uint8_t[id_list_.size() * 3];  // ID(1) + ADDR(1) + LENGTH(1)
-  }
-  else    // 2.0
-  {
-    param_ = new uint8_t[id_list_.size() * 5];  // ID(1) + ADDR(2) + LENGTH(2)
-  }
+  param_ = new uint8_t[id_list_.size() * 5];  // ID(1) + ADDR(2) + LENGTH(2)
 
   int idx = 0;
   for (unsigned int i = 0; i < id_list_.size(); i++)
   {
     uint8_t id = id_list_[i];
-    if (ph_->getProtocolVersion() == 1.0)
-    {
-      param_[idx++] = (uint8_t)length_list_[id];    // LEN
-      param_[idx++] = id;                           // ID
-      param_[idx++] = (uint8_t)address_list_[id];   // ADDR
-    }
-    else    // 2.0
-    {
-      param_[idx++] = id;                               // ID
-      param_[idx++] = DXL_LOBYTE(address_list_[id]);    // ADDR_L
-      param_[idx++] = DXL_HIBYTE(address_list_[id]);    // ADDR_H
-      param_[idx++] = DXL_LOBYTE(length_list_[id]);     // LEN_L
-      param_[idx++] = DXL_HIBYTE(length_list_[id]);     // LEN_H
-    }
+    param_[idx++] = id;                               // ID
+    param_[idx++] = DXL_LOBYTE(address_list_[id]);    // ADDR_L
+    param_[idx++] = DXL_HIBYTE(address_list_[id]);    // ADDR_H
+    param_[idx++] = DXL_LOBYTE(length_list_[id]);     // LEN_L
+    param_[idx++] = DXL_HIBYTE(length_list_[id]);     // LEN_H
   }
 }
 
@@ -139,14 +114,7 @@ int GroupBulkRead::txPacket()
   if (is_param_changed_ == true || param_ == 0)
     makeParam();
 
-  if (ph_->getProtocolVersion() == 1.0)
-  {
-    return ph_->bulkReadTx(port_, param_, id_list_.size() * 3);
-  }
-  else    // 2.0
-  {
-    return ph_->bulkReadTx(port_, param_, id_list_.size() * 5);
-  }
+  return ph_->bulkReadTx(port_, param_, id_list_.size() * 5);
 }
 
 int GroupBulkRead::rxPacket()
@@ -226,7 +194,7 @@ uint32_t GroupBulkRead::getData(uint8_t id, uint16_t address, uint16_t data_leng
 
 bool GroupBulkRead::getError(uint8_t id, uint8_t* error)
 {
-  if (ph_->getProtocolVersion() == 1.0 || !last_result_ || error_list_.find(id) == error_list_.end())
+  if (!last_result_ || error_list_.find(id) == error_list_.end())
     return false;
 
   error[0] = error_list_[id][0];

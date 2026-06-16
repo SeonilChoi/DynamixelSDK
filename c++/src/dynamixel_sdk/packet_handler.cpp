@@ -16,37 +16,12 @@
 
 /* Author: zerom, Ryu Woon Jung (Leon) */
 
-#if defined(__linux__)
 #include "packet_handler.h"
-#include "protocol1_packet_handler.h"
 #include "protocol2_packet_handler.h"
-#elif defined(__APPLE__)
-#include "packet_handler.h"
-#include "protocol1_packet_handler.h"
-#include "protocol2_packet_handler.h"
-#elif defined(_WIN32) || defined(_WIN64)
-#define WINDLLEXPORT
-#include "packet_handler.h"
-#include "protocol1_packet_handler.h"
-#include "protocol2_packet_handler.h"
-#elif defined(ARDUINO) || defined(__OPENCR__) || defined(__OPENCM904__) || defined(ARDUINO_OpenRB)
-#include "../../include/dynamixel_sdk/packet_handler.h"
-#include "../../include/dynamixel_sdk/protocol1_packet_handler.h"
-#include "../../include/dynamixel_sdk/protocol2_packet_handler.h"
-#endif
 
 using namespace dynamixel;
 
-PacketHandler *PacketHandler::getPacketHandler(float protocol_version)
+PacketHandler *PacketHandler::getPacketHandler(float)
 {
-  if (protocol_version == 1.0)
-  {
-    return (PacketHandler *)(Protocol1PacketHandler::getInstance());
-  }
-  else if (protocol_version == 2.0)
-  {
-    return (PacketHandler *)(Protocol2PacketHandler::getInstance());
-  }
-
   return (PacketHandler *)(Protocol2PacketHandler::getInstance());
 }

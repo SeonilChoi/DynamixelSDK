@@ -65,7 +65,6 @@ public:
   /// @param id Dynamixel ID
   /// @return false
   /// @return   when the ID exists already in the list
-  /// @return   when the protocol1.0 has been used
   /// @return or true
   ////////////////////////////////////////////////////////////////////////////////
   bool    addParam    (uint8_t id);
@@ -85,7 +84,6 @@ public:
   /// @brief The function that transmits the Sync Read instruction packet which might be constructed by GroupSyncRead::addParam function
   /// @return COMM_NOT_AVAILABLE
   /// @return   when the list for Sync Read is empty
-  /// @return   when the protocol1.0 has been used
   /// @return or the other communication results which come from PacketHandler::syncReadTx
   ////////////////////////////////////////////////////////////////////////////////
   int     txPacket();
@@ -94,7 +92,6 @@ public:
   /// @brief The function that receives the packet which might be come from the Dynamixel
   /// @return COMM_NOT_AVAILABLE
   /// @return   when the list for Sync Read is empty
-  /// @return   when the protocol1.0 has been used
   /// @return COMM_SUCCESS
   /// @return   when there is packet recieved
   /// @return or the other communication results
@@ -104,7 +101,6 @@ public:
   ////////////////////////////////////////////////////////////////////////////////
   /// @brief The function that transmits and receives the packet which might be come from the Dynamixel
   /// @return COMM_NOT_AVAILABLE
-  /// @return   when the protocol1.0 has been used
   /// @return COMM_RX_FAIL
   /// @return   when there is no packet recieved
   /// @return COMM_SUCCESS
@@ -120,7 +116,6 @@ public:
   /// @param data_length Length of the data for read
   /// @return false
   /// @return   when there are no data available
-  /// @return   when the protocol1.0 has been used
   /// @return or true
   ////////////////////////////////////////////////////////////////////////////////
   bool        isAvailable (uint8_t id, uint16_t address, uint16_t data_length);

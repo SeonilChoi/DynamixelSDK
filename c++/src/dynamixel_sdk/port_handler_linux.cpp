@@ -16,8 +16,6 @@
 
 /* Author: zerom, Ryu Woon Jung (Leon) */
 
-#if defined(__linux__)
-
 #include <stdio.h>
 #include <fcntl.h>
 #include <string.h>
@@ -74,7 +72,6 @@ struct termios2 {
 #endif
 #ifndef BOTHER
 #define BOTHER      0010000
-#endif
 
 using namespace dynamixel;
 

@@ -22,19 +22,7 @@
 #ifndef DYNAMIXEL_SDK_INCLUDE_DYNAMIXEL_SDK_PORTHANDLER_H_
 #define DYNAMIXEL_SDK_INCLUDE_DYNAMIXEL_SDK_PORTHANDLER_H_
 
-#if defined(__linux__)
 #define WINDECLSPEC
-#elif defined(__APPLE__)
-#define WINDECLSPEC
-#elif defined(_WIN32) || defined(_WIN64)
-  #ifdef WINDLLEXPORT
-  #define WINDECLSPEC __declspec(dllexport)
-  #else
-  #define WINDECLSPEC __declspec(dllimport)
-  #endif
-#elif defined(ARDUINO) || defined(__OPENCR__) || defined(__OPENCM904__) || defined(ARDUINO_OpenRB)
-#define WINDECLSPEC
-#endif
 
 #ifdef __GNUC__
 #define DEPRECATED __attribute__((deprecated))
@@ -51,7 +39,7 @@ namespace dynamixel
 {
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @brief The class for port control that inherits PortHandlerLinux, PortHandlerWindows, PortHandlerMac, or PortHandlerArduino
+/// @brief The class for port control that inherits PortHandlerLinux
 ////////////////////////////////////////////////////////////////////////////////
 class WINDECLSPEC PortHandler
 {
@@ -60,7 +48,7 @@ class WINDECLSPEC PortHandler
 
   ////////////////////////////////////////////////////////////////////////////////
   /// @brief The function that gets PortHandler class inheritance
-  /// @description The function gets class inheritance (PortHandlerLinux / PortHandlerWindows / PortHandlerMac / PortHandlerArduino.
+  /// @description The function gets PortHandlerLinux inheritance.
   ////////////////////////////////////////////////////////////////////////////////
   static PortHandler *getPortHandler(const char *port_name);
 

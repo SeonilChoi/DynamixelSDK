@@ -16,19 +16,8 @@
 
 /* Author: zerom, Ryu Woon Jung (Leon) */
 
-#if defined(__linux__)
 #include <unistd.h>
 #include "protocol2_packet_handler.h"
-#elif defined(__APPLE__)
-#include <unistd.h>
-#include "protocol2_packet_handler.h"
-#elif defined(_WIN32) || defined(_WIN64)
-#define WINDLLEXPORT
-#include <Windows.h>
-#include "protocol2_packet_handler.h"
-#elif defined(ARDUINO) || defined(__OPENCR__) || defined(__OPENCM904__) || defined(ARDUINO_OpenRB)
-#include "../../include/dynamixel_sdk/protocol2_packet_handler.h"
-#endif
 
 #include <stdio.h>
 #include <string.h>
@@ -405,11 +394,7 @@ int Protocol2PacketHandler::rxPacket(PortHandler *port, uint8_t *rxpacket, bool 
         break;
       }
     }
-#if defined(__linux__) || defined(__APPLE__)
     usleep(0);
-#elif defined(_WIN32) || defined(_WIN64)
-    Sleep(0);
-#endif
   }
   port->is_using_ = false;
 

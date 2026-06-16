@@ -18,16 +18,7 @@
 
 #include <algorithm>
 
-#if defined(__linux__)
 #include "group_bulk_write.h"
-#elif defined(__APPLE__)
-#include "group_bulk_write.h"
-#elif defined(_WIN32) || defined(_WIN64)
-#define WINDLLEXPORT
-#include "group_bulk_write.h"
-#elif defined(ARDUINO) || defined(__OPENCR__) || defined(__OPENCM904__) || defined(ARDUINO_OpenRB)
-#include "../../include/dynamixel_sdk/group_bulk_write.h"
-#endif
 
 using namespace dynamixel;
 
@@ -40,7 +31,7 @@ GroupBulkWrite::GroupBulkWrite(PortHandler *port, PacketHandler *ph)
 
 void GroupBulkWrite::makeParam()
 {
-  if (ph_->getProtocolVersion() == 1.0 || id_list_.size() == 0)
+  if (id_list_.size() == 0)
     return;
 
   if (param_ != 0)
@@ -72,9 +63,6 @@ void GroupBulkWrite::makeParam()
 
 bool GroupBulkWrite::addParam(uint8_t id, uint16_t start_address, uint16_t data_length, uint8_t *data)
 {
-  if (ph_->getProtocolVersion() == 1.0)
-    return false;
-
   if (std::find(id_list_.begin(), id_list_.end(), id) != id_list_.end())   // id already exist
     return false;
 
@@ -90,9 +78,6 @@ bool GroupBulkWrite::addParam(uint8_t id, uint16_t start_address, uint16_t data_
 }
 void GroupBulkWrite::removeParam(uint8_t id)
 {
-  if (ph_->getProtocolVersion() == 1.0)
-    return;
-
   std::vector<uint8_t>::iterator it = std::find(id_list_.begin(), id_list_.end(), id);
   if (it == id_list_.end())    // NOT exist
     return;
@@ -107,9 +92,6 @@ void GroupBulkWrite::removeParam(uint8_t id)
 }
 bool GroupBulkWrite::changeParam(uint8_t id, uint16_t start_address, uint16_t data_length, uint8_t *data)
 {
-  if (ph_->getProtocolVersion() == 1.0)
-    return false;
-
   std::vector<uint8_t>::iterator it = std::find(id_list_.begin(), id_list_.end(), id);
   if (it == id_list_.end())    // NOT exist
     return false;
@@ -126,7 +108,7 @@ bool GroupBulkWrite::changeParam(uint8_t id, uint16_t start_address, uint16_t da
 }
 void GroupBulkWrite::clearParam()
 {
-  if (ph_->getProtocolVersion() == 1.0 || id_list_.size() == 0)
+  if (id_list_.size() == 0)
     return;
 
   for (unsigned int i = 0; i < id_list_.size(); i++)
@@ -142,7 +124,7 @@ void GroupBulkWrite::clearParam()
 }
 int GroupBulkWrite::txPacket()
 {
-  if (ph_->getProtocolVersion() == 1.0 || id_list_.size() == 0)
+  if (id_list_.size() == 0)
     return COMM_NOT_AVAILABLE;
 
   if (is_param_changed_ == true || param_ == 0)

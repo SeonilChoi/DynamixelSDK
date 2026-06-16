@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/sync_read_write.dir/sync_read_write/sync_read_write.cpp.o -o sync_read_write  -Wl,-rpath,/usr/local/lib /usr/local/lib/libdxl_cpp.so.4.0.5 

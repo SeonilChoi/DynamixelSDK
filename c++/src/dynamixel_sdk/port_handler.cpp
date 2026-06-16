@@ -16,32 +16,12 @@
 
 /* Author: zerom, Ryu Woon Jung (Leon) */
 
-#if defined(__linux__)
 #include "port_handler.h"
 #include "port_handler_linux.h"
-#elif defined(__APPLE__)
-#include "port_handler.h"
-#include "port_handler_mac.h"
-#elif defined(_WIN32) || defined(_WIN64)
-#define WINDLLEXPORT
-#include "port_handler.h"
-#include "port_handler_windows.h"
-#elif defined(ARDUINO) || defined(__OPENCR__) || defined(__OPENCM904__) || defined(ARDUINO_OpenRB)
-#include "../../include/dynamixel_sdk/port_handler.h"
-#include "../../include/dynamixel_sdk/port_handler_arduino.h"
-#endif
 
 using namespace dynamixel;
 
 PortHandler *PortHandler::getPortHandler(const char *port_name)
 {
-#if defined(__linux__)
   return (PortHandler *)(new PortHandlerLinux(port_name));
-#elif defined(__APPLE__)
-  return (PortHandler *)(new PortHandlerMac(port_name));
-#elif defined(_WIN32) || defined(_WIN64)
-  return (PortHandler *)(new PortHandlerWindows(port_name));
-#elif defined(ARDUINO) || defined(__OPENCR__) || defined(__OPENCM904__) || defined(ARDUINO_OpenRB)
-  return (PortHandler *)(new PortHandlerArduino(port_name));
-#endif
 }

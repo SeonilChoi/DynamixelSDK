@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/bulk_read_write.dir/bulk_read_write/bulk_read_write.cpp.o -o bulk_read_write  -Wl,-rpath,/usr/local/lib /usr/local/lib/libdxl_cpp.so.4.0.5 
